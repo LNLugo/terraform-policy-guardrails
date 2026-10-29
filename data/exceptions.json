@@ -1,0 +1,13 @@
+{
+  "exceptions": [
+    {
+      "rule": "S3_003",
+      "resource": "aws_s3_bucket_server_side_encryption_configuration.access_logs",
+      "adr": "ADR-0002",
+      "owner": "platform-storage",
+      "reason": "S3 server access logs can only be delivered to a destination bucket encrypted with SSE-S3; SSE-KMS is not supported for that bucket",
+      "approved_by": "Architecture exception review",
+      "expires": "2027-06-30T00:00:00Z"
+    }
+  ]
+}

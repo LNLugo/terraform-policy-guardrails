@@ -1,0 +1,409 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.8",
+  "variables": {
+    "region": {
+      "value": "us-east-1"
+    },
+    "offline_plan": {
+      "value": true
+    },
+    "corporate_cidr": {
+      "value": "10.20.0.0/16"
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_kms_key.data",
+      "mode": "managed",
+      "type": "aws_kms_key",
+      "name": "data",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "CMK for the payments data bucket",
+          "enable_key_rotation": true,
+          "tags": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "confidential"
+          },
+          "tags_all": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "confidential"
+          }
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.data",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "data",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "example-payments-data-use1",
+          "tags": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "confidential"
+          },
+          "tags_all": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "confidential"
+          }
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_public_access_block.data",
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "data",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "ignore_public_acls": true,
+          "restrict_public_buckets": true
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_server_side_encryption_configuration.data",
+      "mode": "managed",
+      "type": "aws_s3_bucket_server_side_encryption_configuration",
+      "name": "data",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "sse_algorithm": "aws:kms"
+                }
+              ],
+              "bucket_key_enabled": null
+            }
+          ]
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_logging.data",
+      "mode": "managed",
+      "type": "aws_s3_bucket_logging",
+      "name": "data",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "target_prefix": "data/"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.access_logs",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "access_logs",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "example-payments-access-logs-use1",
+          "tags": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "internal"
+          },
+          "tags_all": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "internal"
+          }
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_public_access_block.access_logs",
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "access_logs",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "ignore_public_acls": true,
+          "restrict_public_buckets": true
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_server_side_encryption_configuration.access_logs",
+      "mode": "managed",
+      "type": "aws_s3_bucket_server_side_encryption_configuration",
+      "name": "access_logs",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "sse_algorithm": "AES256"
+                }
+              ],
+              "bucket_key_enabled": null
+            }
+          ]
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_security_group.bastion",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "bastion",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "bastion-ssh",
+          "tags": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "confidential"
+          },
+          "tags_all": {
+            "owner": "payments-platform",
+            "cost_center": "CC1042",
+            "data_classification": "confidential"
+          },
+          "ingress": [
+            {
+              "description": "SSH from corporate network",
+              "protocol": "tcp",
+              "from_port": 22,
+              "to_port": 22,
+              "cidr_blocks": [
+                "10.20.0.0/16"
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": [],
+              "self": false
+            }
+          ],
+          "egress": [
+            {
+              "protocol": "-1",
+              "from_port": 0,
+              "to_port": 0,
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": [],
+              "self": false,
+              "description": ""
+            }
+          ]
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0",
+        "expressions": {
+          "region": {
+            "references": [
+              "var.region"
+            ]
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.data",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "data",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "data"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.data",
+          "mode": "managed",
+          "type": "aws_s3_bucket_public_access_block",
+          "name": "data",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.data.id",
+                "aws_s3_bucket.data"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.data",
+          "mode": "managed",
+          "type": "aws_s3_bucket_server_side_encryption_configuration",
+          "name": "data",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.data.id",
+                "aws_s3_bucket.data"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_logging.data",
+          "mode": "managed",
+          "type": "aws_s3_bucket_logging",
+          "name": "data",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.data.id",
+                "aws_s3_bucket.data"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket.access_logs",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "access_logs",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "access_logs"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.access_logs",
+          "mode": "managed",
+          "type": "aws_s3_bucket_public_access_block",
+          "name": "access_logs",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.access_logs.id",
+                "aws_s3_bucket.access_logs"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.access_logs",
+          "mode": "managed",
+          "type": "aws_s3_bucket_server_side_encryption_configuration",
+          "name": "access_logs",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.access_logs.id",
+                "aws_s3_bucket.access_logs"
+              ]
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  }
+}

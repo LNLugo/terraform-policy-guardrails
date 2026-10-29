@@ -1,0 +1,232 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.8",
+  "variables": {
+    "region": {
+      "value": "eu-west-1"
+    },
+    "offline_plan": {
+      "value": true
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.reports",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "reports",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "example-reports-euw1",
+          "tags": {
+            "owner": "analytics"
+          },
+          "tags_all": {
+            "owner": "analytics"
+          }
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.exports",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "exports",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "example-exports-euw1",
+          "tags": {
+            "owner": "analytics",
+            "cost_center": "CC2001",
+            "data_classification": "top-secret"
+          },
+          "tags_all": {
+            "owner": "analytics",
+            "cost_center": "CC2001",
+            "data_classification": "top-secret"
+          }
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_public_access_block.exports",
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "exports",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "block_public_acls": true,
+          "block_public_policy": false,
+          "ignore_public_acls": true,
+          "restrict_public_buckets": false
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_server_side_encryption_configuration.exports",
+      "mode": "managed",
+      "type": "aws_s3_bucket_server_side_encryption_configuration",
+      "name": "exports",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "sse_algorithm": "AES256"
+                }
+              ],
+              "bucket_key_enabled": null
+            }
+          ]
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_security_group.jump",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "jump",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "jump-host",
+          "tags": null,
+          "tags_all": {},
+          "ingress": [
+            {
+              "description": "",
+              "protocol": "tcp",
+              "from_port": 22,
+              "to_port": 22,
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": [],
+              "self": false
+            }
+          ]
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0",
+        "expressions": {
+          "region": {
+            "references": [
+              "var.region"
+            ]
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.reports",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "reports",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "reports"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket.exports",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "exports",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "exports"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.exports",
+          "mode": "managed",
+          "type": "aws_s3_bucket_public_access_block",
+          "name": "exports",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.exports.id",
+                "aws_s3_bucket.exports"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.exports",
+          "mode": "managed",
+          "type": "aws_s3_bucket_server_side_encryption_configuration",
+          "name": "exports",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.exports.id",
+                "aws_s3_bucket.exports"
+              ]
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  }
+}

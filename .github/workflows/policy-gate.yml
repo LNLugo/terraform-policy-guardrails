@@ -1,0 +1,82 @@
+name: policy-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  OPA_VERSION: "1.4.2"
+  CONFTEST_VERSION: "0.59.0"
+  TERRAFORM_VERSION: "1.9.8"
+
+jobs:
+  # 1. The policies are code, so they get tested like code.
+  policy-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: open-policy-agent/setup-opa@v2
+        with:
+          version: ${{ env.OPA_VERSION }}
+      - name: Format check
+        run: opa fmt --list --fail policy
+      - name: Static check
+        run: opa check --strict policy
+      - name: Unit tests
+        run: opa test policy -v
+
+  # 2. Real Terraform plans run through the gate.
+  #    The compliant example must pass; the noncompliant example must be rejected.
+  plan-gate:
+    needs: policy-unit-tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dir: terraform/compliant
+            expect: pass
+          - dir: terraform/noncompliant
+            expect: fail
+    env:
+      # Offline plan: create-only plans need no AWS account.
+      AWS_ACCESS_KEY_ID: mock
+      AWS_SECRET_ACCESS_KEY: mock
+      TF_VAR_offline_plan: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+      - name: Install Conftest
+        run: |
+          curl -sSL "https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" | tar xz conftest
+          sudo mv conftest /usr/local/bin/
+      - name: Terraform plan
+        run: |
+          terraform -chdir=${{ matrix.dir }} init -backend=false -input=false
+          terraform -chdir=${{ matrix.dir }} plan -input=false -out=tfplan
+          terraform -chdir=${{ matrix.dir }} show -json tfplan > plan.json
+      - name: Policy gate
+        run: |
+          set +e
+          conftest test plan.json --policy policy --data data --rego-version v1 --no-color | tee result.txt
+          rc=${PIPESTATUS[0]}
+          {
+            echo "### Policy gate: \`${{ matrix.dir }}\` (expected: ${{ matrix.expect }})"
+            echo '```'
+            cat result.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ matrix.expect }}" = "pass" ] && [ "$rc" -ne 0 ]; then
+            echo "::error::Compliant example was rejected by policy"; exit 1
+          fi
+          if [ "${{ matrix.expect }}" = "fail" ] && [ "$rc" -eq 0 ]; then
+            echo "::error::Noncompliant example was NOT rejected by policy"; exit 1
+          fi
+          echo "Gate behaved as expected."
