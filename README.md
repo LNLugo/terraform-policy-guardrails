@@ -1,5 +1,7 @@
 # terraform-policy-guardrails
 
+[![policy-gate](https://github.com/LNLugo/terraform-policy-guardrails/actions/workflows/policy-gate.yml/badge.svg)](https://github.com/LNLugo/terraform-policy-guardrails/actions/workflows/policy-gate.yml)
+
 Architecture standards for cloud infrastructure, written as code and enforced
 in the pipeline. Every pull request runs `terraform plan`, converts the plan to
 JSON, and evaluates it against Rego policies with
